@@ -49,16 +49,6 @@ namespace i18n.PostBuild
             foreach (var lang in rep.GetAvailableLanguages())
             {
                 string filePath = Path.Combine(settings.LocaleDirectory, lang.LanguageShortTag, "messages.js");
-                string backupPath = filePath + ".backup";
-
-                if (File.Exists(filePath)) //we backup one version. more advanced backup solutions could be added here.
-                {
-                    if (File.Exists(backupPath))
-                    {
-                        File.Delete(backupPath);
-                    }
-                    File.Move(filePath, backupPath);
-                }
 
                 if (File.Exists(filePath)) //we make sure the old file is removed first
                 {

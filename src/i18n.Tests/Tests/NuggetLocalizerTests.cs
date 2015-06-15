@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using i18n.Domain.Abstract;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using i18n.Domain.Concrete;
 
@@ -74,10 +75,10 @@ namespace i18n.Tests
 
             i18n.NuggetLocalizer obj = new i18n.NuggetLocalizer(new i18nSettings(new WebConfigSettingService(null)), textLocalizer);
 
-            string pre = "[[[Will occur every %0 year!!!Will occur every %0 years|||0///First variable is a month]]]";
+            string pre = "[[[Will occur every %0 year!!!Will occur every %0 years|||1///First variable is a month]]]";
             // Value for first variable is missing.
             string post = obj.ProcessNuggets(pre, languages);
-            Assert.AreEqual("Will occur every 0 year", post);
+            Assert.AreEqual("Will occur every 1 year", post);
 
             pre = "[[[Will occur every %0 year!!!Will occur every %0 years|||10///First variable is a month]]]";
             // Value for first variable is missing.

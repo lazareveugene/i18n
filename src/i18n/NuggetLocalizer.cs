@@ -71,9 +71,9 @@ namespace i18n
                 // Lookup resource using canonical msgid.
                 message = _textLocalizer.GetText(HttpUtility.HtmlDecode(nugget.MsgId), HttpUtility.HtmlDecode(nugget.Comment), languages, out lt, pluralNumber: pluralNumber)
                     ?? (String.IsNullOrEmpty(nugget.MsgIdPlural) || pluralNumber == 1 ? nugget.MsgId : nugget.MsgIdPlural);
-                message = message == nugget.MsgId
-                    ? (String.IsNullOrEmpty(nugget.MsgIdPlural) || pluralNumber == 1 ? nugget.MsgId : nugget.MsgIdPlural)
-                    : message;
+                //message = message == nugget.MsgId
+                //    ? (String.IsNullOrEmpty(nugget.MsgIdPlural) || pluralNumber == 1 ? nugget.MsgId : nugget.MsgIdPlural)
+                //    : message;
                 //
                 if (nugget.IsFormatted)
                 {

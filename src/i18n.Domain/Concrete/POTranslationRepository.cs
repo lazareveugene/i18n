@@ -141,16 +141,6 @@ namespace i18n.Domain.Concrete
                 POTDate = File.GetLastWriteTime(templateFilePath);
             }
             string filePath = GetPathForLanguage(translation.LanguageInformation.LanguageShortTag);
-            string backupPath = GetPathForLanguage(translation.LanguageInformation.LanguageShortTag) + ".backup";
-
-            if (File.Exists(filePath)) //we backup one version. more advanced backup solutions could be added here.
-            {
-                if (File.Exists(backupPath))
-                {
-                    File.Delete(backupPath);
-                }
-                System.IO.File.Move(filePath, backupPath);
-            }
 
             if (File.Exists(filePath)) //we make sure the old file is removed first
             {
@@ -200,6 +190,8 @@ namespace i18n.Domain.Concrete
                 int.TryParse(PluralsDictionary.Get(translation.LanguageInformation.LanguageShortTag).Split(';')[0].Split('=')[1], out nplurals);
                 foreach (var item in orderedItems)
                 {
+                    if(!item.References.Any())
+                        continue;
                     hasReferences = false;
 
                     if (item.TranslatorComments != null)
@@ -235,8 +227,6 @@ namespace i18n.Domain.Concrete
                         }
                     }
 
-                    string prefix = hasReferences ? "" : prefix = "#~ ";
-
                     if (_settings.MessageContextEnabledFromComment
                         && item.ExtractedComments != null
                         && item.ExtractedComments.Count() != 0)
@@ -271,17 +261,7 @@ namespace i18n.Domain.Concrete
         public void SaveTemplate(IDictionary<string, TemplateItem> items)
         {
             string filePath = GetAbsoluteLocaleDir() + "/messages.pot";
-            string backupPath = filePath + ".backup";
-
-            if (File.Exists(filePath)) //we backup one version. more advanced backup solutions could be added here.
-            {
-                if (File.Exists(backupPath))
-                {
-                    File.Delete(backupPath);
-                }
-                System.IO.File.Move(filePath, backupPath);
-            }
-
+            
             if (File.Exists(filePath)) //we make sure the old file is removed first
             {
                 File.Delete(filePath);
@@ -639,6 +619,11 @@ namespace i18n.Domain.Concrete
         /// <param name="value"></param>
         private static void WriteString(StreamWriter stream, bool hasReferences, string type, string value)
         {
+            // If noref...
+            if (!hasReferences)
+            {
+                return;
+            }
             // Logic for outputting multi-line msgid.
             //
             // IN : a<LF>b
@@ -669,12 +654,6 @@ namespace i18n.Domain.Concrete
             else
             {
                 sb.AppendFormat("{0} \"{1}\"", type, value);
-            }
-            // If noref...prefix each line with "#~ ".
-            if (!hasReferences)
-            {
-                sb.Insert(0, "#~ ");
-                sb.Replace("\r\n", "\r\n#~ ");
             }
             //
             string s = sb.ToString();
