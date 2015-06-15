@@ -33,6 +33,7 @@ namespace i18n.Domain.Concrete
             foreach (TemplateItem srcItem in src.Values) {
                 TranslationItem dstItem = dst.Items.GetOrAdd(srcItem.MsgKey, k => new TranslationItem { MsgKey = srcItem.MsgKey });
                 dstItem.MsgId = srcItem.MsgId;
+                dstItem.MsgIdPlural = srcItem.MsgIdPlural;
                 dstItem.References = srcItem.References;
                 dstItem.ExtractedComments = srcItem.Comments;
              }

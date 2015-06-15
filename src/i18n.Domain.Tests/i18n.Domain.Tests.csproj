@@ -49,6 +49,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Concrete\POTranslationRepositoryTests.cs" />
+    <Compile Include="Entities\PluralsDictionaryTests.cs" />
     <Compile Include="NuggetTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NuggetParserTests.cs" />
@@ -62,6 +64,9 @@
       <Project>{E7A9BBA3-8A95-492C-8806-4DE63C1DBA06}</Project>
       <Name>i18n</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

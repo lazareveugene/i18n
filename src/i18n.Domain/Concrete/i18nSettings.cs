@@ -39,8 +39,27 @@ namespace i18n.Domain.Concrete
 				var startPath = Path.GetDirectoryName(_settingService.GetConfigFileLocation());
 				return Path.GetFullPath(Path.Combine(startPath, path));
 			}
-		}
+        }
 
+        #region initial msgid language
+
+        private const string _msgidLang = "en";
+        public virtual string InitialLanguage
+        {
+            get
+            {
+                var prefixedString = GetPrefixedString("InitialLanguage");
+                var setting = _settingService.GetSetting(prefixedString);
+                return setting ?? _msgidLang;
+            }
+            set
+            {
+                var prefixedString = GetPrefixedString("InitialLanguage");
+                _settingService.SetSetting(prefixedString, value);
+            }
+        }
+
+        #endregion
 
 		#region Locale directory
 
@@ -240,31 +259,55 @@ namespace i18n.Domain.Concrete
 				string prefixedString = GetPrefixedString("NuggetDelimiterToken");
 				_settingService.SetSetting(prefixedString, value);
 			}
-		}
+        }
 
-		private const string _nuggetCommentTokenDefault = "///";
-		public virtual string NuggetCommentToken
-		{
-			get
-			{
-				string prefixedString = GetPrefixedString("NuggetCommentToken");
-				string setting = _settingService.GetSetting(prefixedString);
-				if (setting != null)
-				{
-					return setting;
-				}
-				else
-				{
-					return _nuggetCommentTokenDefault;
-				}
+        private const string _nuggetPluralTokenDefault = "!!!";
+        public virtual string NuggetPluralToken
+        {
+            get
+            {
+                string prefixedString = GetPrefixedString("NuggetPluralToken");
+                string setting = _settingService.GetSetting(prefixedString);
+                if (setting != null)
+                {
+                    return setting;
+                }
+                else
+                {
+                    return _nuggetPluralTokenDefault;
+                }
 
-			}
-			set
-			{
-				string prefixedString = GetPrefixedString("NuggetCommentToken");
-				_settingService.SetSetting(prefixedString, value);
-			}
-		}
+            }
+            set
+            {
+                string prefixedString = GetPrefixedString("NuggetPluralToken");
+                _settingService.SetSetting(prefixedString, value);
+            }
+        }
+
+        private const string _nuggetCommentTokenDefault = "///";
+        public virtual string NuggetCommentToken
+        {
+            get
+            {
+                string prefixedString = GetPrefixedString("NuggetCommentToken");
+                string setting = _settingService.GetSetting(prefixedString);
+                if (setting != null)
+                {
+                    return setting;
+                }
+                else
+                {
+                    return _nuggetCommentTokenDefault;
+                }
+
+            }
+            set
+            {
+                string prefixedString = GetPrefixedString("NuggetCommentToken");
+                _settingService.SetSetting(prefixedString, value);
+            }
+        }
 
 		#endregion
 

@@ -14,7 +14,7 @@ copy "tools\init.ps1" "bin\tools"
 copy "src\i18n\bin\Release\i18n.dll" "bin\lib\net40"
 copy "src\i18n\bin\Release\i18n.xml" "bin\lib\net40"
 copy "src\i18n.Domain\bin\Release\i18n.Domain.dll" "bin\lib\net40"
-copy "src\i18n.PostBuild\bin\Release\i18n.PostBuild.dll" "bin\lib\net40"
+copy "src\i18n.PostBuild\bin\Release\i18n.PostBuild.exe" "bin\lib\net40"
 copy "src\i18n.POTGenerator\bin\Release\i18n.POTGenerator.vsix" "bin\tools"
 
 ".nuget\NuGet.exe" pack i18n.nuspec -BasePath bin

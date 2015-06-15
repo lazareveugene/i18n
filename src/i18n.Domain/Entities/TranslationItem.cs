@@ -16,10 +16,11 @@ namespace i18n.Domain.Entities
 		//"this is line two"
 		//this of course means that messages needs to be a collection and the POTranslationRepository's parse and save functions needs to be updated.
 		//this should preferably be decided upon and fixed before anyone writes a database repository
-	
-		public string MsgKey { get; set; }
-		public string MsgId { get; set; }
-		public string Message { get; set; }
+
+        public string MsgKey { get; set; }
+        public string MsgId { get; set; }
+        public string MsgIdPlural { get; set; }
+        public IEnumerable<string> Messages { get; set; }
 		public IEnumerable<string> References { get; set; }
 		public IEnumerable<string> ExtractedComments { get; set; }
 		public IEnumerable<string> TranslatorComments { get; set; }

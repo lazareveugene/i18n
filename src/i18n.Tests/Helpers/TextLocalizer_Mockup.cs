@@ -43,7 +43,7 @@ namespace i18n.Tests
             return m_appLanguages;
         }
 
-        public virtual string GetText(string msgid, string msgcomment, LanguageItem[] languages, out LanguageTag o_langtag, int maxPasses = -1)
+        public virtual string GetText(string msgid, string msgcomment, LanguageItem[] languages, out LanguageTag o_langtag, int maxPasses = -1, int pluralNumber=0)
         {
             string s1;
             LanguageTag lt = LanguageMatching.MatchLists(
@@ -51,6 +51,7 @@ namespace i18n.Tests
                 m_appLanguages,
                 msgid,
                 null,
+                pluralNumber,
                 out s1,
                 maxPasses);
            //

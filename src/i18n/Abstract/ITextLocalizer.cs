@@ -39,6 +39,9 @@
         /// 4 - allow exact match or default-region match or script match or language match only, or failing return the default language.
         /// -1 to set to most tolerant (i.e. 4).
         /// </param>
+        /// <param name="pluralNumber">
+        /// Plural Index to obtain
+        /// </param>
         /// <returns>
         /// When <paramref name="msgid"/> is set to non-null, returns either the sucessully-looked up localized string, or 
         /// null if the lookup failed.
@@ -47,10 +50,11 @@
         /// or null if no match was made.
         /// </returns>
         string GetText(
-            string msgid, 
-            string msgcomment, 
-            LanguageItem[] languages, 
+            string msgid,
+            string msgcomment,
+            LanguageItem[] languages,
             out LanguageTag o_langtag,
-            int maxPasses = -1);
+            int maxPasses = -1,
+            int pluralNumber = 1);
     }
 }

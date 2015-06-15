@@ -65,5 +65,24 @@ namespace i18n.Tests
             string post = obj.ProcessNuggets(pre, languages);
             Assert.AreEqual("Will occur April every  years", post);
         }
+
+        [TestMethod]
+        [Description("Issue #89: Parsing a nugget with plural.")]
+        public void NuggetLocalizer_Plural()
+        {
+            ITextLocalizer textLocalizer = new TextLocalizer_Mockup();
+
+            i18n.NuggetLocalizer obj = new i18n.NuggetLocalizer(new i18nSettings(new WebConfigSettingService(null)), textLocalizer);
+
+            string pre = "[[[Will occur every %0 year!!!Will occur every %0 years|||0///First variable is a month]]]";
+            // Value for first variable is missing.
+            string post = obj.ProcessNuggets(pre, languages);
+            Assert.AreEqual("Will occur every 0 year", post);
+
+            pre = "[[[Will occur every %0 year!!!Will occur every %0 years|||10///First variable is a month]]]";
+            // Value for first variable is missing.
+            post = obj.ProcessNuggets(pre, languages);
+            Assert.AreEqual("Will occur every 10 years", post);
+        }
     }
 }

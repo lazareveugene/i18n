@@ -13,8 +13,9 @@ namespace i18n.Domain.Entities
 	/// </summary>
 	public class TemplateItem
 	{
-		public string MsgKey;
-        public string MsgId;
+        public string MsgKey { get; set; }
+        public string MsgId { get; set; }
+        public string MsgIdPlural { get; set; }
 		public IEnumerable<string> References { get; set; }
 		public IEnumerable<string> Comments { get; set; }
 

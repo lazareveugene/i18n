@@ -73,7 +73,7 @@ namespace i18n
             }
         }
 
-        public virtual string GetText(string msgid, string msgcomment, LanguageItem[] languages, out LanguageTag o_langtag, int maxPasses = -1)
+        public virtual string GetText(string msgid, string msgcomment, LanguageItem[] languages, out LanguageTag o_langtag, int maxPasses = -1, int pluralNumber = 1)
         {
             // Validate arguments.
             if (maxPasses > (int)LanguageTag.MatchGrade._MaxMatch +1) { 
@@ -94,6 +94,7 @@ namespace i18n
                 GetAppLanguages(), 
                 msgkey, 
                 TryGetTextFor, 
+                pluralNumber,
                 out text, 
                 Math.Min(maxPasses, (int)LanguageTag.MatchGrade._MaxMatch));
             // If match was successfull
@@ -161,7 +162,7 @@ namespace i18n
         /// to indciate that one or more messages exist for the langtag.
         /// On failure, returns null.
         /// </returns>
-        private string TryGetTextFor(string langtag, string msgkey)
+        private string TryGetTextFor(string langtag, string msgkey, int pluralnumber)
         {
             // If no messages loaded for language...fail.
             if (!IsLanguageValid(langtag)) {
@@ -173,7 +174,7 @@ namespace i18n
                 return ""; }   
 
             // Lookup specific message text in the language PO and if found...return that.
-            string text = LookupText(langtag, msgkey);
+            string text = LookupText(langtag, msgkey, PluralsDictionary.calcPluralIndex(langtag, pluralnumber));
             if (text != null) {
                 return text; }
 
@@ -214,7 +215,7 @@ namespace i18n
         }
 
        /// <returns>null if not found.</returns>
-        private string LookupText(string langtag, string msgkey)
+        private string LookupText(string langtag, string msgkey,int pluralIndex)
         {
         // Note that there is no need to serialize access to HttpRuntime.Cache when just reading from it.
         //
@@ -237,12 +238,13 @@ namespace i18n
 
             if (messages == null
                 || !messages.TryGetValue(msgkey, out message)
-                || !message.Message.IsSet())
+                || pluralIndex >= message.Messages.Count()
+                || !message.Messages.ElementAt(pluralIndex).IsSet())
             {
                 return null;
             }
 
-            return message.Message;
+            return pluralIndex<message.Messages.Count()? message.Messages.ElementAt(pluralIndex):null;
         }
 
         /// <returns>null if not found.</returns>

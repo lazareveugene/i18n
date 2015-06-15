@@ -52,7 +52,8 @@ namespace i18n
             LanguageItem[] UserLanguages, 
             IEnumerable<KeyValuePair<string, LanguageTag> > AppLanguages,
             string key,
-            Func<string, string, string> TryGetTextFor,
+            Func<string, string, int, string> TryGetTextFor,
+            int pluralNumber,
             out string o_text,
             int maxPasses = -1)
         {
@@ -98,7 +99,7 @@ namespace i18n
                                 continue; }
                            // Optionally test for a resource of the given key in the matching language.
                             if (TryGetTextFor != null) {
-                                o_text = TryGetTextFor(langApp.Key, key);
+                                o_text = TryGetTextFor(langApp.Key, key, pluralNumber);
                                 if (o_text == null) {
                                     continue; }
                             }
@@ -129,7 +130,7 @@ namespace i18n
                                 continue; }
                            // Optionally test for a resource of the given key in the matching language.
                             if (TryGetTextFor != null) {
-                                o_text = TryGetTextFor(langApp.Key, key);
+                                o_text = TryGetTextFor(langApp.Key, key, pluralNumber);
                                 if (o_text == null) {
                                     continue; }
                             }

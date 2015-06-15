@@ -59,6 +59,7 @@
     <Compile Include="Concrete\WebConfigSettingService.cs" />
     <Compile Include="Entities\Language.cs" />
     <Compile Include="Concrete\POTranslationRepository.cs" />
+    <Compile Include="Entities\PluralsDictionary.cs" />
     <Compile Include="Entities\TemplateItem.cs" />
     <Compile Include="Entities\TranslationItem.cs" />
     <Compile Include="Entities\Translation.cs" />

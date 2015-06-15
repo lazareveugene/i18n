@@ -21,26 +21,30 @@ namespace i18n.Helpers
     /// </remarks>
     public class NuggetTokens
     {
-		public string BeginToken     { get; private set; }
-		public string EndToken       { get; private set; }
-		public string DelimiterToken { get; private set; }
-        public string CommentToken   { get; private set; }
+        public string BeginToken { get; private set; }
+        public string EndToken { get; private set; }
+        public string DelimiterToken { get; private set; }
+        public string CommentToken { get; private set; }
+        public string PluralToken { get; private set; }
 
         public NuggetTokens(
-		    string beginToken,
-		    string endToken,
-		    string delimiterToken,
-		    string commentToken)
+            string beginToken,
+            string endToken,
+            string delimiterToken,
+            string commentToken,
+            string pluralToken)
         {
-            if (!beginToken.IsSet())     { throw new ArgumentNullException("beginToken"); }
-            if (!endToken.IsSet())       { throw new ArgumentNullException("endToken"); }
+            if (!beginToken.IsSet()) { throw new ArgumentNullException("beginToken"); }
+            if (!endToken.IsSet()) { throw new ArgumentNullException("endToken"); }
             if (!delimiterToken.IsSet()) { throw new ArgumentNullException("delimiterToken"); }
-            if (!commentToken.IsSet())   { throw new ArgumentNullException("commentToken"); }
+            if (!commentToken.IsSet()) { throw new ArgumentNullException("commentToken"); }
+            if (!pluralToken.IsSet()) { throw new ArgumentNullException("pluralToken"); }
 
             BeginToken = beginToken;
             EndToken = endToken;
             DelimiterToken = delimiterToken;
             CommentToken = commentToken;
+            PluralToken = pluralToken;
         }
     }
 
@@ -65,14 +69,16 @@ namespace i18n.Helpers
     public class Nugget
     {
         public string MsgId { get; set; }
+        public string MsgIdPlural { get; set; }
         public string[] FormatItems { get; set; }
         public string Comment { get; set; }
 
-    // Helpers
+        // Helpers
 
         public bool IsFormatted
         {
-            get {
+            get
+            {
                 return FormatItems != null && FormatItems.Length != 0;
             }
         }
@@ -84,19 +90,27 @@ namespace i18n.Helpers
 
         public override bool Equals(object obj)
         {
-            if (obj == null) {
-                return false; }
-            if (this.GetType() != obj.GetType()) {
-                return false; }
+            if (obj == null)
+            {
+                return false;
+            }
+            if (this.GetType() != obj.GetType())
+            {
+                return false;
+            }
             Nugget other = (Nugget)obj;
-           // Compare non-array members.
+            // Compare non-array members.
             if (MsgId != other.MsgId // NB: the operator==() on string objects handles null value on either side just fine.
-                || Comment != other.Comment) {
-                return false; }
-           // Compare arrays.
+                || Comment != other.Comment)
+            {
+                return false;
+            }
+            // Compare arrays.
             if ((FormatItems == null) != (other.FormatItems == null)
-                || (FormatItems != null && !FormatItems.SequenceEqual(other.FormatItems))) {
-                return false; }
+                || (FormatItems != null && !FormatItems.SequenceEqual(other.FormatItems)))
+            {
+                return false;
+            }
             return true;
         }
 
@@ -136,29 +150,29 @@ namespace i18n.Helpers
         /// </summary>
         Regex m_regexNuggetBreakdown;
 
-    // Con
+        // Con
 
         public NuggetParser(
-		    NuggetTokens nuggetTokens,
+            NuggetTokens nuggetTokens,
             Context context)
         {
             m_nuggetTokens = nuggetTokens;
             m_context = context;
-           // Prep the regexes. We escape each token char to ensure it is not misinterpreted.
-           // · Breakdown e.g. "\[\[\[(.+?)(?:\|\|\|(.+?))*(?:\/\/\/(.+?))?\]\]\]"
+            // Prep the regexes. We escape each token char to ensure it is not misinterpreted.
+            // · Breakdown e.g. "\[\[\[(.+?)(?:\|\|\|(.+?))*(?:\/\/\/(.+?))?\]\]\]"
             m_regexNuggetBreakdown = new Regex(
                 string.Format(@"{0}(.+?)(?:{1}(.{4}?))*(?:{2}(.+?))?{3}",
-                    EscapeString(m_nuggetTokens.BeginToken), 
-                    EscapeString(m_nuggetTokens.DelimiterToken), 
-                    EscapeString(m_nuggetTokens.CommentToken), 
+                    EscapeString(m_nuggetTokens.BeginToken),
+                    EscapeString(m_nuggetTokens.DelimiterToken),
+                    EscapeString(m_nuggetTokens.CommentToken),
                     EscapeString(m_nuggetTokens.EndToken),
-                    m_context == Context.SourceProcessing ? "+" : "*"), 
-                RegexOptions.CultureInvariant 
+                    m_context == Context.SourceProcessing ? "+" : "*"),
+                RegexOptions.CultureInvariant
                     | RegexOptions.Singleline);
-                        // RegexOptions.Singleline in fact enable multi-line nuggets.
+            // RegexOptions.Singleline in fact enable multi-line nuggets.
         }
 
-    // Operations
+        // Operations
 
         /// <summary>
         /// Parses a string entity for nuggets, forwarding the nugget to a caller-provided
@@ -177,26 +191,26 @@ namespace i18n.Helpers
         /// Entity string reflecting any nugget strings replacements.
         /// </returns>
         public string ParseString(
-            string entity, 
+            string entity,
             Func<string, int, Nugget, string, string> ProcessNugget)
         {
-        // Note that this method has two-levels of delegates:
-        //   Outer delegate is the delegate which is called by regex as it matches each nugget
-        //   Inner delegate is the client callback delegate (ProcessNugget) which we call from the outer delegate.
-        //
-           // Lookup any/all nuggets in the entity and call the client delegate (ProcessNugget) for each.
+            // Note that this method has two-levels of delegates:
+            //   Outer delegate is the delegate which is called by regex as it matches each nugget
+            //   Inner delegate is the client callback delegate (ProcessNugget) which we call from the outer delegate.
+            //
+            // Lookup any/all nuggets in the entity and call the client delegate (ProcessNugget) for each.
             return m_regexNuggetBreakdown.Replace(entity, delegate(Match match)
-	        {
+            {
                 Nugget nugget = NuggetFromRegexMatch(match);
-               //
+                //
                 string modifiedNuggetString = ProcessNugget(
                     match.Groups[0].Value, // entire nugget string
                     match.Groups[0].Index, // zero-based pos of the first char of entire nugget string
                     nugget,                // broken-down nugget
                     entity);               // source entity string
-               // Returns either modified nugget string, or original nugget string (i.e. for no replacement).
+                // Returns either modified nugget string, or original nugget string (i.e. for no replacement).
                 return modifiedNuggetString ?? match.Groups[0].Value;
-	        });
+            });
         }
 
         /// <summary>
@@ -210,7 +224,7 @@ namespace i18n.Helpers
             return NuggetFromRegexMatch(match);
         }
 
-    // Helpers
+        // Helpers
 
         /// <summary>
         /// Modifies a string such that each character is prefixed by another character
@@ -218,8 +232,9 @@ namespace i18n.Helpers
         /// </summary>
         private static string EscapeString(string str, char escapeChar = '\\')
         {
-            StringBuilder str1 = new StringBuilder(str.Length *2);
-            foreach (var c in str) {
+            StringBuilder str1 = new StringBuilder(str.Length * 2);
+            foreach (var c in str)
+            {
                 str1.Append(escapeChar);
                 str1.Append(c);
             }
@@ -232,27 +247,38 @@ namespace i18n.Helpers
         private Nugget NuggetFromRegexMatch(Match match)
         {
             if (!match.Success
-                || match.Groups.Count != 4) {
-                return null; }
+                || match.Groups.Count != 4)
+            {
+                return null;
+            }
             Nugget n = new Nugget();
-           // Extract msgid from 2nd capture group.
-            n.MsgId = match.Groups[1].Value;
-           // Extract format items from 3rd capture group.
+            // Extract msgid from 2nd capture group.
+            var splitMsgId = match.Groups[1].Value.Split(new [] { m_nuggetTokens.PluralToken },
+                StringSplitOptions.None);
+            n.MsgId = splitMsgId[0];
+            n.MsgIdPlural = splitMsgId.Count() > 1 ? splitMsgId[1] : "";
+            // Extract format items from 3rd capture group.
             var formatItems = match.Groups[2].Captures;
-            if (formatItems.Count != 0) {
+            if (formatItems.Count != 0)
+            {
                 n.FormatItems = new string[formatItems.Count];
                 int i = 0;
-                foreach (Capture capture in formatItems) {
+                foreach (Capture capture in formatItems)
+                {
                     if (m_context == Context.SourceProcessing
-                        && !capture.Value.IsSet()) {
-                        return null; } // bad format
+                        && !capture.Value.IsSet())
+                    {
+                        return null;
+                    } // bad format
                     n.FormatItems[i++] = capture.Value;
                 }
             }
-           // Extract comment from 4th capture group.
-            if (match.Groups[3].Value.IsSet()) {
-                n.Comment = match.Groups[3].Value; }
-           // Success.
+            // Extract comment from 4th capture group.
+            if (match.Groups[3].Value.IsSet())
+            {
+                n.Comment = match.Groups[3].Value;
+            }
+            // Success.
             return n;
         }
     }
