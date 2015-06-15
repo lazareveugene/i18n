@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>I18N-beta</id>
-    <version>2.0.25</version>
+    <version>2.0.26</version>
     <authors>Martin Connell</authors>
     <owners>Martin Connell</owners>
     <summary>Smart internationalization for .NET web apps</summary>
