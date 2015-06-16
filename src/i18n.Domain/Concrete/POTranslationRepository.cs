@@ -190,7 +190,7 @@ namespace i18n.Domain.Concrete
                 int.TryParse(PluralsDictionary.Get(translation.LanguageInformation.LanguageShortTag).Split(';')[0].Split('=')[1], out nplurals);
                 foreach (var item in orderedItems)
                 {
-                    if(!item.References.Any())
+                    if (item.References == null || !item.References.Any())
                         continue;
                     hasReferences = false;
 
@@ -261,7 +261,7 @@ namespace i18n.Domain.Concrete
         public void SaveTemplate(IDictionary<string, TemplateItem> items)
         {
             string filePath = GetAbsoluteLocaleDir() + "/messages.pot";
-            
+
             if (File.Exists(filePath)) //we make sure the old file is removed first
             {
                 File.Delete(filePath);

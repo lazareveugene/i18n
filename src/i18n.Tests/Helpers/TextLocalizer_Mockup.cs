@@ -17,7 +17,7 @@ namespace i18n.Tests
     class TextLocalizer_Mockup : ITextLocalizer
     {
 
-        readonly ConcurrentDictionary<string, LanguageTag> m_appLanguages = new ConcurrentDictionary<string,LanguageTag>();
+        readonly ConcurrentDictionary<string, LanguageTag> m_appLanguages = new ConcurrentDictionary<string, LanguageTag>();
 
         readonly string prefix;
         readonly string suffix;
@@ -36,14 +36,14 @@ namespace i18n.Tests
             AddAppLanguage("en");
         }
 
-	#region [ITextLocalizer]
+        #region [ITextLocalizer]
 
         public virtual ConcurrentDictionary<string, LanguageTag> GetAppLanguages()
         {
             return m_appLanguages;
         }
 
-        public virtual string GetText(string msgid, string msgcomment, LanguageItem[] languages, out LanguageTag o_langtag, int maxPasses = -1, int pluralNumber=0)
+        public virtual string GetText(string msgid, string msgcomment, LanguageItem[] languages, out LanguageTag o_langtag, int maxPasses = -1, int pluralNumber = 1)
         {
             string s1;
             LanguageTag lt = LanguageMatching.MatchLists(
@@ -54,14 +54,16 @@ namespace i18n.Tests
                 pluralNumber,
                 out s1,
                 maxPasses);
-           //
+            //
             o_langtag = lt;
-            if (lt.IsValid()) {
-                return string.Format("{0}{1}{2}", prefix, msgid, suffix); }
+            if (lt.IsValid())
+            {
+                return pluralNumber == 1 ? string.Format("{0}{1}{2}", prefix, msgid, suffix) : null;
+            }
             return null;
         }
 
-    #endregion
+        #endregion
 
     }
 }
